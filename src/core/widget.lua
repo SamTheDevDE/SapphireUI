@@ -44,6 +44,7 @@ end
 
 --- Draws the widget.
 -- This is a placeholder and should be overridden by subclasses.
+-- luacheck: no unused args
 function Widget:draw()
     -- Base draw function, does nothing.
 end

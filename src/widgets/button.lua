@@ -57,7 +57,7 @@ end
 function Button:handle_event(event_data)
     local event_type = event_data[1]
     if event_type == "mouse_click" and self.on_click then
-        local button, x, y = event_data[2], event_data[3], event_data[4]
+        local _, x, y = event_data[2], event_data[3], event_data[4]
         if x >= self.x and x < self.x + self.width and y >= self.y and y < self.y + self.height then
             self.on_click()
         end
