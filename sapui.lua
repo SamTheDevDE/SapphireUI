@@ -193,7 +193,7 @@ function Installer.remove()
     TUI.log("Removing SapphireUI...")
     TUI.draw()
     if fs.exists(INSTALL_PATH) then
-        fs.delete(INSTALL_PATH)
+        fs.delete(INSTALL_PATH .. "../")
         Installer.local_version = "Not Installed"
         TUI.log("Removal complete.")
     else
