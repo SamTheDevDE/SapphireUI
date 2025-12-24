@@ -1,6 +1,6 @@
 -- lua/SapphireUI/widgets/frame.lua
 
-local Widget = require("SapphireUI.core.widget")
+local Widget = require("lib/SapphireUI.core.widget")
 
 local Frame = {}
 Frame.__index = Frame
