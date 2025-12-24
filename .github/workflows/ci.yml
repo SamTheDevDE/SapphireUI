@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  luacheck:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Lua
+      uses: leafo/gh-actions-lua@v8
+      with:
+        luaVersion: "5.2"
+    - name: Install luacheck
+      run: |
+        luarocks install luacheck
+    - name: luacheck
+      run: |
+        luacheck lua
+
+  create_pr:
+    needs: luacheck
+    if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: dev
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: "Merge dev into main"
+        title: "Merge dev into main"
+        body: "Automated PR to merge dev into main"
+        branch: "dev-pr"
+        base: "main"
+
+  deploy_manifest:
+    needs: luacheck
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Generate MANIFEST
+      run: |
+        find lua -type f -name "*.lua" > MANIFEST
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: .
+        publish_branch: gh-pages
+        user_name: 'github-actions[bot]'
+        user_email: 'github-actions[bot]@users.noreply.github.com'
+        commit_message: "Deploy MANIFEST"
+        allow_empty_commit: true
+        force_orphan: true
+        keep_files: false
+        publish_commit_message: "Deploy MANIFEST"
+        files: MANIFEST
