@@ -38,7 +38,7 @@ jobs:
         run: luarocks install luacheck
 
       - name: Run luacheck
-        run: luacheck --no-color --formatter plain src examples install.lua
+        run: luacheck --no-color --formatter plain src sapui.lua
 
       - name: Create Pull Request
         env:
@@ -79,7 +79,7 @@ jobs:
         run: luarocks install luacheck
 
       - name: Final lint check
-        run: luacheck --no-color --formatter plain src examples install.lua
+        run: luacheck --no-color --formatter plain src examples sapui.lua
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -93,7 +93,11 @@ jobs:
           echo '{' > main/install_manifest.json
           echo "  \"version\": \"$VERSION\"," >> main/install_manifest.json
           echo '  "files": [' >> main/install_manifest.json
-          find src -type f -name "*.lua" | sed -e 's/^/    "/' -e 's/$/"/' | paste -sd, - >> main/install_manifest.json
+          # Combine find results for src files and the root VERSION file
+          {
+            find src -type f -name "*.lua"
+            echo "VERSION"
+          } | sed -e 's/^/    "/' -e 's/$/"/' | paste -sd, - >> main/install_manifest.json
           echo '' >> main/install_manifest.json
           echo '  ]' >> main/install_manifest.json
           echo '}' >> main/install_manifest.json
