@@ -157,7 +157,10 @@ function Installer.install_or_update()
         TUI.log("Error: Failed to parse manifest.")
         return
     end
-
+    if manifest.version == Installer.local_version then
+        TUI.log("SapphireUI is already up to date.")
+        return
+    end
     TUI.log("Installing version " .. manifest.version)
     TUI.draw()
     fs.makeDir(INSTALL_PATH)
