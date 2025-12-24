@@ -11,6 +11,7 @@ function UIManager.new(terminal)
     self.term = terminal
     self.width, self.height = self.term.getSize()
     self.root = Widget.new(1, 1, self.width, self.height, nil)
+    self.root.manager = self -- Widgets need a reference to the manager
     self.active_screen = self.root
     self.theme = {}
     return self
@@ -26,6 +27,12 @@ function UIManager:set_theme(theme)
 end
 
 function UIManager:add(widget_type, options)
+    local new_widget = self:create_widget(widget_type, options)
+    self.active_screen:add_child(new_widget)
+    return new_widget
+end
+
+function UIManager:create_widget(widget_type, options)
     local widget_name = string.lower(widget_type)
     local WidgetClass = require("lib/SapphireUI.widgets." .. widget_name)
 
@@ -40,7 +47,7 @@ function UIManager:add(widget_type, options)
     end
 
     local new_widget = WidgetClass.new(final_options)
-    self.active_screen:add_child(new_widget)
+    new_widget.manager = self -- Pass manager reference to the new widget
     return new_widget
 end
 
