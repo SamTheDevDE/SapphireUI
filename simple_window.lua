@@ -1,5 +1,6 @@
 -- Set up package path to find SapphireUI
-package.path = package.path .. ";d:/Development/Lua/Minecraft/SapphireUI/src/?.lua"
+local script_path = (...):match("(.-)[^/\\]*$") or ""
+package.path = package.path .. ";" .. script_path .. "src/?.lua"
 
 local SapphireUI = require("init")
 local Frame = require("widgets.frame")
