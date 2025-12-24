@@ -45,7 +45,7 @@ local closeButton = mainFrame:add("Button", {
 })
 
 -- Set the button's action
-function closeButton:onClick()
+closeButton.onClick = function()
     ui:stop() -- Stop the UI manager's event loop
 end
 
