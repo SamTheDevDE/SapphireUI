@@ -2,7 +2,7 @@
 
 local SapphireUI = {}
 
-function SapphireUI.init(terminal)
+function SapphireUI.init()
     -- Initialization logic here
 end
 
