@@ -1,6 +1,6 @@
 -- lua/SapphireUI/widgets/button.lua
 
-local Widget = require("SapphireUI.core.widget")
+local Widget = require("lib/SapphireUI.core.widget")
 
 local Button = {}
 Button.__index = Button

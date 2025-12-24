@@ -1,6 +1,6 @@
 -- lua/SapphireUI/widgets/label.lua
 
-local Widget = require("SapphireUI.core.widget")
+local Widget = require("lib/SapphireUI.core.widget")
 
 local Label = {}
 Label.__index = Label

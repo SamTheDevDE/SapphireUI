@@ -1,7 +1,7 @@
 -- lua/SapphireUI/ui_manager.lua
 
-local Widget = require("SapphireUI.core.widget")
-local Event = require("SapphireUI.core.event")
+local Widget = require("lib/SapphireUI.core.widget")
+local Event = require("lib/SapphireUI.core.event")
 
 local UIManager = {}
 UIManager.__index = UIManager
