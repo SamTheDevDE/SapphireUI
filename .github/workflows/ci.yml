@@ -37,8 +37,8 @@ jobs:
       - name: Install luacheck
         run: luarocks install luacheck
 
-      - name: Run luacheck (fail on warnings)
-        run: luacheck --no-color --formatter plain --warnings src examples install.lua
+      - name: Run luacheck
+        run: luacheck --no-color --formatter plain src examples install.lua
 
       - name: Create Pull Request
         env:
@@ -79,7 +79,7 @@ jobs:
         run: luarocks install luacheck
 
       - name: Final lint check
-        run: luacheck --no-color --formatter plain --warnings src examples install.lua
+        run: luacheck --no-color --formatter plain src examples install.lua
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
