@@ -1,35 +1,59 @@
--- examples/simple_window.lua
+-- SapphireUI Simple Window Example
 
-package.path = package.path .. ";./lua/?.lua"
-
-local UIManager = require("SapphireUI.ui_manager")
-local Frame = require("SapphireUI.widgets.frame")
-local Label = require("SapphireUI.widgets.label")
-local Button = require("SapphireUI.widgets.button")
-local DefaultTheme = require("SapphireUI.themes.default")
-
-local term = term
-
-local ui = UIManager.new(term)
-ui:set_theme(DefaultTheme)
-
-local main_screen = Frame.new(1, 1, ui.width, ui.height)
-
-local title_label = Label.new("Welcome to SapphireUI!", 2, 2, main_screen)
-main_screen:add_child(title_label)
-
-local my_button = Button.new("Click Me", 5, 5, 15, 3, main_screen)
-my_button.on_click = function()
-    title_label.text = "Button Clicked!"
+-- Make sure SapphireUI is installed, e.g., in /lib/
+-- If you installed it elsewhere, you might need to adjust the path.
+if not package.loaded["SapphireUI.init"] then
+    local path = "/lib/SapphireUI" -- Default install path
+    package.path = package.path .. ";" .. path .. "/?.lua;" .. path .. "/?/init.lua"
 end
-main_screen:add_child(my_button)
 
-local quit_button = Button.new("Quit", 5, 9, 15, 3, main_screen)
-quit_button.on_click = function()
-    -- No proper quit mechanism yet, so just error out
-    error("Quit button clicked")
+local SapphireUI = require("SapphireUI.init")
+
+-- Create a UI Manager instance
+local ui = SapphireUI.UIManager.new()
+
+-- Create a main frame
+local mainFrame = ui:add("Frame", {
+    x = 5,
+    y = 3,
+    width = 41,
+    height = 13,
+    backgroundColor = SapphireUI.themes.default.frame.background,
+    title = "My First Window",
+    titleColor = SapphireUI.themes.default.frame.title,
+    draggable = true
+})
+
+-- Add a label to the frame
+mainFrame:add("Label", {
+    x = 3,
+    y = 3,
+    text = "Welcome to SapphireUI!",
+    textColor = SapphireUI.themes.default.label.text
+})
+
+-- Add a button to the frame
+local closeButton = mainFrame:add("Button", {
+    x = 15,
+    y = 10,
+    width = 11,
+    height = 3,
+    text = "Close",
+    backgroundColor = SapphireUI.themes.default.button.background,
+    textColor = SapphireUI.themes.default.button.text,
+    hoverBackgroundColor = SapphireUI.themes.default.button.hover,
+})
+
+-- Set the button's action
+function closeButton:onClick()
+    ui:stop() -- Stop the UI manager's event loop
 end
-main_screen:add_child(quit_button)
 
-ui:set_screen(main_screen)
+-- Start the UI event loop
 ui:run()
+
+-- After the loop stops, print a message
+term.clear()
+term.setCursorPos(1,1)
+print("UI was closed.")
+
