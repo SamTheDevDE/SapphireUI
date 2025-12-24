@@ -21,8 +21,9 @@ jobs:
       run: echo "$HOME/.luarocks/bin" >> $GITHUB_PATH
     - name: Install luacheck
       run: luarocks install luacheck
-    - name: luacheck
-      run: luacheck lua
+    - name: Run luacheck
+      run: luacheck .
+      working-directory: ${{ github.workspace }}
 
   create_pr:
     needs: luacheck
