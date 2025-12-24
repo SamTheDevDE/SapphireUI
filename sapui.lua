@@ -9,6 +9,9 @@ local INSTALL_PATH = "/lib/SapphireUI"
 local VERSION_FILE = fs.combine(INSTALL_PATH, ".version")
 local term = term
 
+-- Forward-declare Installer table
+local Installer = {}
+
 -- ============================================================================
 -- TUI State and Drawing
 -- ============================================================================
@@ -84,7 +87,6 @@ end
 -- ============================================================================
 -- Installer Logic
 -- ============================================================================
-local Installer = {}
 Installer.local_version = "Checking..."
 Installer.remote_version = "Checking..."
 
@@ -166,7 +168,8 @@ function Installer.install_or_update()
         TUI.draw()
         local content = Installer.download(base_url .. file_path)
         if content then
-            local target_path = fs.combine(INSTALL_PATH, file_path:gsub("src/", ""))
+            local clean_path = (file_path:gsub("src/", ""))
+            local target_path = fs.combine(INSTALL_PATH, clean_path)
             fs.makeDir(fs.getDir(target_path))
             local file = fs.open(target_path, "w")
             file.write(content)
