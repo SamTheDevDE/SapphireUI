@@ -4,8 +4,8 @@ local args = { ... }
 local branch = args[1] or "main"
 local install_path = args[2] or "/lib/SapphireUI"
 
-local manifest_url = "https://raw.githubusercontent.com/YOUR_USERNAME/SapphireUI/" .. branch .. "/MANIFEST"
-local base_url = "https://raw.githubusercontent.com/YOUR_USERNAME/SapphireUI/" .. branch .. "/"
+local manifest_url = "https://raw.githubusercontent.com/YOUR_USERNAME/SapphireUI/gh-pages/MANIFEST"
+local base_url = "https://raw.githubusercontent.com/SamTheDevDE/SapphireUI/" .. branch .. "/"
 
 local function download(url)
     local response = http.get(url)

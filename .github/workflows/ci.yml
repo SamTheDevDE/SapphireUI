@@ -47,21 +47,29 @@ jobs:
 
   deploy_manifest:
     needs: luacheck
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev') && github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Generate MANIFEST
+    - name: Generate JSON Manifest
       run: |
-        find lua -type f -name "*.lua" > MANIFEST
+        BRANCH_NAME=${{ github.ref_name }}
+        mkdir -p manifests/$BRANCH_NAME
+        echo '{' > manifests/$BRANCH_NAME/install_manifest.json
+        echo '  "files": [' >> manifests/$BRANCH_NAME/install_manifest.json
+        find lua -type f -name "*.lua" | sed -e 's/^/    "/' -e 's/$/"/' | paste -sd, - >> manifests/$BRANCH_NAME/install_manifest.json
+        echo '' >> manifests/$BRANCH_NAME/install_manifest.json
+        echo '  ]' >> manifests/$BRANCH_NAME/install_manifest.json
+        echo '}' >> manifests/$BRANCH_NAME/install_manifest.json
+        echo "Generated manifests/$BRANCH_NAME/install_manifest.json"
+        cat manifests/$BRANCH_NAME/install_manifest.json
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v4
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_branch: gh-pages
-        publish_dir: .
+        publish_dir: manifests
         user_name: 'github-actions[bot]'
         user_email: 'github-actions[bot]@users.noreply.github.com'
-        commit_message: "Deploy MANIFEST"
-        force_orphan: true
-        keep_files: false
+        commit_message: "Deploy manifest for ${{ github.ref_name }}"
+        keep_files: true
