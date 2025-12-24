@@ -38,7 +38,7 @@ jobs:
         run: luarocks install luacheck
 
       - name: Run luacheck
-        run: luacheck --no-color --formatter plain src examples install.lua
+        run: luacheck --no-color --formatter plain src sapui.lua
 
       - name: Create Pull Request
         env:
@@ -79,7 +79,7 @@ jobs:
         run: luarocks install luacheck
 
       - name: Final lint check
-        run: luacheck --no-color --formatter plain src examples install.lua
+        run: luacheck --no-color --formatter plain src examples sapui.lua
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
