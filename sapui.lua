@@ -218,7 +218,7 @@ local function main()
 
     while true do
         TUI.draw()
-        local event, key = os.pullEvent("key")
+        local _, key = os.pullEvent("key")
 
         if key == keys.q or key == keys.escape then
             break
