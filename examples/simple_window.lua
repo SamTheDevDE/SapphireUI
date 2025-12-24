@@ -90,7 +90,7 @@ local function updateStats()
 end
 
 -- We add a custom event handler to the UI manager to listen for timer events.
-ui:onEvent("timer", function(eventData)
+ui:onEvent("timer", function(_)
     -- The first timer event will be from our os.startTimer call.
     -- We restart the timer to create a loop and then update the stats.
     os.startTimer(1) -- Fire again in 1 second
