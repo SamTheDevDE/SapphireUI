@@ -86,10 +86,12 @@ jobs:
 
       - name: Generate JSON Manifest
         run: |
+          VERSION=$(cat VERSION)
           # The artifact needs an index.html file at the root to be a valid Pages site
           touch index.html
           mkdir -p main
           echo '{' > main/install_manifest.json
+          echo "  \"version\": \"$VERSION\"," >> main/install_manifest.json
           echo '  "files": [' >> main/install_manifest.json
           find src -type f -name "*.lua" | sed -e 's/^/    "/' -e 's/$/"/' | paste -sd, - >> main/install_manifest.json
           echo '' >> main/install_manifest.json
