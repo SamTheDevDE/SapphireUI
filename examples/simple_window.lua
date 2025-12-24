@@ -1,12 +1,19 @@
 -- SapphireUI Simple Window Example
 
--- Make sure SapphireUI is installed, e.g., in /lib/
--- If you installed it elsewhere, you might need to adjust the path.
+-- Make sure SapphireUI is installed or we are in the dev environment.
 if not package.loaded["SapphireUI.init"] then
-    local path = "/lib/SapphireUI" -- Default install path
-    package.path = package.path .. ";" .. path .. "/?.lua;" .. path .. "/?/init.lua"
+    -- For local development, point to the 'src' directory
+    if fs.exists("../src") then
+        package.path = package.path .. ";../?.lua;../?/init.lua"
+    -- For installed environments, point to the default lib path
+    else
+        local path = "/lib/SapphireUI"
+        package.path = package.path .. ";" .. path .. "/?.lua;" .. path .. "/?/init.lua"
+    end
 end
 
+-- In the dev environment, the 'src' folder acts as the root for the library.
+-- The 'init.lua' inside 'src' is the entry point for the "SapphireUI" module.
 local SapphireUI = require("SapphireUI.init")
 
 -- Create a UI Manager instance
