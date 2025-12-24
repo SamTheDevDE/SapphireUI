@@ -5,7 +5,7 @@
 
 -- In the dev environment, the 'src' folder acts as the root for the library.
 -- The 'init.lua' inside 'src' is the entry point for the "SapphireUI" module.
-local SapphireUI = require("SapphireUI.init")
+local SapphireUI = require("lib/SapphireUI.init")
 
 -- Create a UI Manager instance
 local ui = SapphireUI.UIManager.new()
