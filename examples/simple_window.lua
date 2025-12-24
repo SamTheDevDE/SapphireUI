@@ -3,21 +3,6 @@
 -- This example demonstrates a dynamic window with periodically updating content,
 -- simulating a live system monitor.
 
--- Make sure SapphireUI is installed or we are in the dev environment.
-if not package.loaded["SapphireUI.init"] then
-    -- For local development, find the project root and add the 'src' directory to the path.
-    if fs.exists("../src") then
-        -- This tells Lua to look for a 'SapphireUI' folder in the project root.
-        -- We then use package.cpath to "alias" 'SapphireUI' to the 'src' folder.
-        package.path = fs.combine("..", "?.lua;") .. package.path
-        package.cpath = fs.combine("..", "SapphireUI=src;") .. package.cpath
-    -- For installed environments, point to the default lib path
-    else
-        local path = "/lib/SapphireUI"
-        package.path = package.path .. ";" .. path .. "/?.lua;" .. path .. "/?/init.lua"
-    end
-end
-
 -- In the dev environment, the 'src' folder acts as the root for the library.
 -- The 'init.lua' inside 'src' is the entry point for the "SapphireUI" module.
 local SapphireUI = require("SapphireUI.init")
