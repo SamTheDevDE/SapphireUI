@@ -25,6 +25,25 @@ function UIManager:set_theme(theme)
     self.theme = theme
 end
 
+function UIManager:add(widget_type, options)
+    local widget_name = string.lower(widget_type)
+    local WidgetClass = require("lib/SapphireUI.widgets." .. widget_name)
+
+    -- Combine theme defaults with provided options
+    local final_options = {}
+    local theme_defaults = self.theme[widget_name] or {}
+    for k, v in pairs(theme_defaults) do
+        final_options[k] = v
+    end
+    for k, v in pairs(options) do
+        final_options[k] = v
+    end
+
+    local new_widget = WidgetClass.new(final_options)
+    self.active_screen:add_child(new_widget)
+    return new_widget
+end
+
 function UIManager:draw()
     self.term.clear()
     self.active_screen:draw(self.term, self.theme)
