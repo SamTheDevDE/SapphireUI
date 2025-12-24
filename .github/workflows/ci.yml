@@ -2,95 +2,105 @@ name: CI
 
 on:
   push:
-    branches: [ main, dev ]
-  pull_request:
-    branches: [ main ]
+    branches:
+      - main
+      - dev
 
-# Add top-level permissions for the workflow
 permissions:
-  contents: read
+  contents: read # Default permission for all jobs
 
 jobs:
-  luacheck:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Set up Lua
-      uses: leafo/gh-actions-lua@v10
-      with:
-        luaVersion: "5.2"
-    - name: Set up LuaRocks
-      uses: leafo/gh-actions-luarocks@v4
-    - name: Add LuaRocks to PATH
-      run: echo "$HOME/.luarocks/bin" >> $GITHUB_PATH
-    - name: Install luacheck
-      run: luarocks install luacheck
-    - name: Run luacheck
-      run: luacheck src examples install.lua
-      working-directory: ${{ github.workspace }}
-
-  create_pr:
-    needs: luacheck
+  # This job runs ONLY on pushes to the 'dev' branch
+  lint-and-pr:
     if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
     runs-on: ubuntu-latest
-    # Grant permissions for this specific job
     permissions:
       contents: write
       pull-requests: write
     steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    - name: Create Pull Request
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        if ! gh pr list --base main --head dev --json number | grep -q '[0-9]'; then
-          gh pr create --base main --head dev --title "Merge dev into main" --body "Automated PR to merge dev into main"
-        else
-          echo "Pull request from dev to main already exists."
-        fi
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-  # This job now only builds the site and uploads it as an artifact
-  build:
-    needs: luacheck
-    if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev') && github.event_name == 'push'
+      - name: Set up Lua
+        uses: leafo/gh-actions-lua@v10
+        with:
+          luaVersion: "5.2"
+
+      - name: Set up LuaRocks
+        uses: leafo/gh-actions-luarocks@v4
+
+      - name: Add LuaRocks to PATH
+        run: echo "$HOME/.luarocks/bin" >> $GITHUB_PATH
+
+      - name: Install luacheck
+        run: luarocks install luacheck
+
+      - name: Run luacheck (fail on warnings)
+        run: luacheck --no-color --formatter plain --warnings src examples install.lua
+
+      - name: Create Pull Request
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if ! gh pr list --base main --head dev --json number | grep -q '[0-9]'; then
+            gh pr create --base main --head dev --title "Merge dev into main" --body "Automated PR after successful linting."
+          else
+            echo "Pull request from dev to main already exists."
+          fi
+
+  # This job runs ONLY on pushes to the 'main' branch
+  build-and-deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Setup Pages
-      id: pages
-      uses: actions/configure-pages@v5
-    - name: Generate JSON Manifest
-      run: |
-        BRANCH_NAME=${{ github.ref_name }}
-        # The artifact needs an index.html file at the root
-        touch index.html
-        mkdir -p $BRANCH_NAME
-        echo '{' > $BRANCH_NAME/install_manifest.json
-        echo '  "files": [' >> $BRANCH_NAME/install_manifest.json
-        find src -type f -name "*.lua" | sed -e 's/^/    "/' -e 's/$/"/' | paste -sd, - >> $BRANCH_NAME/install_manifest.json
-        echo '' >> $BRANCH_NAME/install_manifest.json
-        echo '  ]' >> $BRANCH_ANCHE_NAME/install_manifest.json
-        echo '}' >> $BRANCH_NAME/install_manifest.json
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: .
-
-  # This new job handles the deployment
-  deploy:
-    needs: build
-    if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev') && github.event_name == 'push'
-    # Grant permissions for the deployment
     permissions:
       pages: write
       id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Lua
+        uses: leafo/gh-actions-lua@v10
+        with:
+          luaVersion: "5.2"
+
+      - name: Set up LuaRocks
+        uses: leafo/gh-actions-luarocks@v4
+
+      - name: Add LuaRocks to PATH
+        run: echo "$HOME/.luarocks/bin" >> $GITHUB_PATH
+
+      - name: Install luacheck
+        run: luarocks install luacheck
+
+      - name: Final lint check
+        run: luacheck --no-color --formatter plain --warnings src examples install.lua
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Generate JSON Manifest
+        run: |
+          # The artifact needs an index.html file at the root to be a valid Pages site
+          touch index.html
+          mkdir -p main
+          echo '{' > main/install_manifest.json
+          echo '  "files": [' >> main/install_manifest.json
+          find src -type f -name "*.lua" | sed -e 's/^/    "/' -e 's/$/"/' | paste -sd, - >> main/install_manifest.json
+          echo '' >> main/install_manifest.json
+          echo '  ]' >> main/install_manifest.json
+          echo '}' >> main/install_manifest.json
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
