@@ -8,7 +8,7 @@
 local SapphireUI = require("lib/SapphireUI.init")
 
 -- Create a UI Manager instance
-local ui = SapphireUI.UIManager.new()
+local ui = SapphireUI.UIManager.new(term)
 
 -- Create a main frame
 local mainFrame = ui:add("Frame", {
