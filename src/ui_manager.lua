@@ -30,7 +30,7 @@ function UIManager:add(widget_type, options)
     if type(options) ~= "table" then
         options = {}
     end
-    
+
     local widget = self:create_widget(widget_type, options)
     table.insert(self.widgets, widget)
     return widget
@@ -40,12 +40,12 @@ function UIManager:create_widget(widget_type, options)
     if type(options) ~= "table" then
         error("Expected options to be a table, got " .. type(options))
     end
-    
+
     local widget_class = self.widget_types[widget_type]
     if not widget_class then
         error("Unknown widget type: " .. tostring(widget_type))
     end
-    
+
     options.manager = self
     local widget = widget_class.new(options)
     return widget
