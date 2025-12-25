@@ -4,6 +4,10 @@ local Widget = {}
 Widget.__index = Widget
 
 function Widget.new(options)
+    if type(options) ~= "table" then
+        error("Expected options to be a table, got " .. type(options))
+    end
+
     local self = setmetatable({}, Widget)
     self.x = options.x or 1
     self.y = options.y or 1
