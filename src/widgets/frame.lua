@@ -6,8 +6,16 @@ local Frame = {}
 Frame.__index = Frame
 setmetatable(Frame, { __index = Widget })
 
-function Frame.new(x, y, width, height, parent)
-    local self = setmetatable(Widget.new(x, y, width, height, parent), Frame)
+function Frame.new(options)
+    local self = setmetatable(Widget.new(options), Frame)
+
+    -- Allow setting other properties from options
+    for k, v in pairs(options) do
+        if self[k] == nil then
+            self[k] = v
+        end
+    end
+    
     return self
 end
 

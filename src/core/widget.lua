@@ -3,15 +3,23 @@
 local Widget = {}
 Widget.__index = Widget
 
-function Widget.new(x, y, width, height, parent)
+function Widget.new(options)
     local self = setmetatable({}, Widget)
-    self.x = x
-    self.y = y
-    self.width = width
-    self.height = height
-    self.parent = parent
+    self.x = options.x or 1
+    self.y = options.y or 1
+    self.width = options.width or 0
+    self.height = options.height or 0
+    self.parent = options.parent or nil
     self.children = {}
-    self.visible = true
+    self.visible = options.visible ~= false -- Default to true
+
+    -- Allow setting other properties from options
+    for k, v in pairs(options) do
+        if self[k] == nil then
+            self[k] = v
+        end
+    end
+    
     return self
 end
 
