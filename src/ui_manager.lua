@@ -27,28 +27,28 @@ function UIManager:set_theme(theme)
 end
 
 function UIManager:add(widget_type, options)
-    local new_widget = self:create_widget(widget_type, options)
-    self.active_screen:add_child(new_widget)
-    return new_widget
+    if type(options) ~= "table" then
+        options = {}
+    end
+
+    local widget = self:create_widget(widget_type, options)
+    table.insert(self.widgets, widget)
+    return widget
 end
 
 function UIManager:create_widget(widget_type, options)
-    local widget_name = string.lower(widget_type)
-    local WidgetClass = require("lib/SapphireUI.widgets." .. widget_name)
-
-    -- Combine theme defaults with provided options
-    local final_options = {}
-    local theme_defaults = self.theme[widget_name] or {}
-    for k, v in pairs(theme_defaults) do
-        final_options[k] = v
-    end
-    for k, v in pairs(options) do
-        final_options[k] = v
+    if type(options) ~= "table" then
+        error("Expected options to be a table, got " .. type(options))
     end
 
-    local new_widget = WidgetClass.new(final_options)
-    new_widget.manager = self -- Pass manager reference to the new widget
-    return new_widget
+    local widget_class = self.widget_types[widget_type]
+    if not widget_class then
+        error("Unknown widget type: " .. tostring(widget_type))
+    end
+
+    options.manager = self
+    local widget = widget_class.new(options)
+    return widget
 end
 
 function UIManager:draw()
