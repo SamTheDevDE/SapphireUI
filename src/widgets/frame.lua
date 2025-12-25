@@ -15,7 +15,7 @@ function Frame.new(options)
             self[k] = v
         end
     end
-    
+
     return self
 end
 
