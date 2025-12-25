@@ -4,22 +4,28 @@ local Widget = {}
 Widget.__index = Widget
 
 function Widget.new(options)
-    if type(options) ~= "table" then
+    -- Ensure options is always a table
+    if options == nil then
+        options = {}
+    elseif type(options) ~= "table" then
         error("Expected options to be a table, got " .. type(options))
     end
 
     local self = setmetatable({}, Widget)
+    
+    -- Set default properties
     self.x = options.x or 1
     self.y = options.y or 1
     self.width = options.width or 0
     self.height = options.height or 0
     self.parent = options.parent or nil
+    self.manager = options.manager or nil
     self.children = {}
     self.visible = options.visible ~= false -- Default to true
-
-    -- Allow setting other properties from options
+    
+    -- Copy all other options as properties
     for k, v in pairs(options) do
-        if self[k] == nil then
+        if self[k] == nil and k ~= "manager" then
             self[k] = v
         end
     end
@@ -28,11 +34,24 @@ function Widget.new(options)
 end
 
 function Widget:add_child(child)
+    if type(child) ~= "table" or not child.x then
+        error("Expected child to be a widget")
+    end
     table.insert(self.children, child)
     child.parent = self
 end
 
 function Widget:add(widget_type, options)
+    if type(widget_type) ~= "string" then
+        error("Expected widget_type to be a string, got " .. type(widget_type))
+    end
+    
+    if options == nil then
+        options = {}
+    elseif type(options) ~= "table" then
+        error("Expected options to be a table, got " .. type(options))
+    end
+
     local manager = self.manager
     if not manager then
         local root = self
@@ -51,10 +70,10 @@ function Widget:add(widget_type, options)
     return new_widget
 end
 
-function Widget:draw(term)
+function Widget:draw(term, theme)
     if not self.visible then return end
     for _, child in ipairs(self.children) do
-        child:draw(term)
+        child:draw(term, theme)
     end
 end
 

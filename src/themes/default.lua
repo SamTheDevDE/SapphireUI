@@ -2,13 +2,19 @@
 
 return {
     frame = {
-        background = colors.red
+        background = colors.black,
+        title = colors.white,
+        foreground = colors.white,
+        border = colors.white
     },
     label = {
-        foreground = colors.white
+        text = colors.white,
+        background = nil
     },
     button = {
         background = colors.lightGray,
-        foreground = colors.black
-    },
+        text = colors.black,
+        hover = colors.white,
+        hoverText = colors.black
+    }
 }
